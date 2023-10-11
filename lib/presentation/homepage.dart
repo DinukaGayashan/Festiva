@@ -1,51 +1,47 @@
 import 'package:flutter/material.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.title});
+import '../utility/constants.dart';
 
-  final String title;
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  DateTimeRange range =
-  DateTimeRange(start: DateTime(2022, 1, 1), end: DateTime(2023, 1, 1));
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    const int tabsCount = 3;
 
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return DefaultTabController(
+      initialIndex: 1,
+      length: tabsCount,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Festiva'),
+          // notificationPredicate: (ScrollNotification notification) {
+          //   return notification.depth == 1;
+          // },
+          // scrolledUnderElevation: 4.0,
+          // shadowColor: Theme.of(context).shadowColor,
+          bottom: const TabBar(
+            tabs: <Widget>[
+              Tab(
+                icon: Icon(Icons.event_available),
+                text: 'Events',
+              ),
+              Tab(
+                icon: Icon(Icons.calendar_month),
+                text: 'Calendar',
+              ),
+              Tab(
+                icon: Icon(Icons.map),
+                text: 'Map',
+              ),
+            ],
+          ),
+        ),
+        body: TabBarView(
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$range',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }

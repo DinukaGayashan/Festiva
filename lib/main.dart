@@ -1,9 +1,16 @@
 import 'package:festiva/presentation/homepage.dart';
+import 'package:festiva/utility/constants.dart';
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(const Festiva());
 }
+
+List<String> titles = <String>[
+  'Cloud',
+  'Beach',
+  'Sunny',
+];
 
 class Festiva extends StatelessWidget {
   const Festiva({super.key});
@@ -11,12 +18,15 @@ class Festiva extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Festiva',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        useMaterial3: true,
+        primaryColor: kBaseColor1,
+        scaffoldBackgroundColor: kBackgroundColor,
+        brightness: Brightness.dark,
+        fontFamily: 'NotoSans',
       ),
-      home: const HomePage(title: 'Flutter Demo Home Page'),
+      home: const HomePage(),
     );
   }
 }
-
