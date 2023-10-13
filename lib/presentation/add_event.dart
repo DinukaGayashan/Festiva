@@ -1,7 +1,11 @@
+import 'dart:io';
+import 'package:uuid/uuid.dart';
 import 'package:festiva/utility/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
-import 'package:gallery_picker/gallery_picker.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class AddEvent extends StatefulWidget {
   const AddEvent({super.key});
@@ -12,10 +16,13 @@ class AddEvent extends StatefulWidget {
 }
 
 class _AddEventState extends State<AddEvent> {
+  final _firestore = FirebaseFirestore.instance;
+  final _storage = FirebaseStorage.instance;
+
   late String eventName = '', description = '';
   DateTime date = DateTime.now();
-  List<MediaFile>? media;
-  late LatLong? location;
+  FilePickerResult? media;
+  late GeoPoint? location = null;
   late String publisherName = '', publisherLink = '';
 
   @override
@@ -77,11 +84,12 @@ class _AddEventState extends State<AddEvent> {
               const Text('Media'),
               MaterialButton(
                 color: kAccentColor2,
-                child: Text(media?.length != null
-                    ? '${media?.length} selected'
+                child: Text(media?.count != null
+                    ? '${media?.count} selected'
                     : '0 selected'),
                 onPressed: () async {
-                  media = await GalleryPicker.pickMedia(context: context);
+                  media =
+                      await FilePicker.platform.pickFiles(allowMultiple: true);
                   setState(() {
                     media;
                   });
@@ -107,7 +115,8 @@ class _AddEventState extends State<AddEvent> {
                             buttonColor: kBackgroundColor,
                             buttonText: 'Set Location',
                             onPicked: (pickedData) {
-                              location = pickedData.latLong;
+                              location = GeoPoint(pickedData.latLong.latitude,
+                                  pickedData.latLong.longitude);
                               Navigator.of(context).pop();
                             },
                           ),
@@ -159,7 +168,7 @@ class _AddEventState extends State<AddEvent> {
               ),
               MaterialButton(
                 color: kAccentColor1,
-                onPressed: () {
+                onPressed: () async {
                   if (eventName.isEmpty || description.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         content: Text('Please add necessary event details.')));
@@ -167,12 +176,43 @@ class _AddEventState extends State<AddEvent> {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         content: Text('Please add necessary user details.')));
                   } else {
-                    print(date);
-                    print(media?.length);
-                    print(location);
+                    try {
+                      List<String> medias = [];
+                      var uuid = const Uuid();
+                      final media = this.media;
+                      if (media != null) {
+                        for (PlatformFile file in media.files) {
+                          UploadTask uploadTask;
+                          String path = 'media/$eventName/${uuid.v4()}';
+                          uploadTask = _storage
+                              .ref()
+                              .child(path)
+                              .putFile(File(file.path!));
+
+                          final snapshot = await uploadTask.whenComplete(() {});
+                          final url = await snapshot.ref.getDownloadURL();
+                          medias.add(url);
+                        }
+                      }
+
+                      await _firestore.collection('events').add({
+                        'eventName': eventName,
+                        'description': description,
+                        'date': date,
+                        'media': medias,
+                        'location': location,
+                        'publisherName': publisherName,
+                        'publisherLink': publisherLink,
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text('Event successfully added.')));
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text('Event adding failed.')));
+                    }
                   }
                 },
-                child: const Text('           Add event            '),
+                child: const Text(' Add event '),
               ),
             ],
           ),
