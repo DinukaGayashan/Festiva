@@ -1,54 +1,72 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festiva/presentation/add_event.dart';
+import 'package:festiva/utility/event.dart';
 import 'package:flutter/material.dart';
 
-
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
   static const String id = 'HomePage';
 
   @override
-  Widget build(BuildContext context) {
-    // const int tabsCount = 3;
+  State<HomePage> createState() => _HomePageState();
+}
 
-    return DefaultTabController(
-      initialIndex: 1,
-      length: 3,
-      child: Scaffold(
+class _HomePageState extends State<HomePage> {
+
+  final _firestore = FirebaseFirestore.instance;
+  List<Event> events=[];
+
+  Future<List<Event>> getEvents() async {
+    List<Event> eventList = [];
+    final evnts = await _firestore
+        .collection('events')
+        .get();
+    for (var event in evnts.docs) {
+      eventList.add(Event(
+        event.data()['eventName'],
+        event.data()['description'],
+        event.data()['date'].toDate(),
+        event.data()['media'],
+        event.data()['location'],
+        event.data()['publisherName'],
+        event.data()['publisherLink'],
+      ));
+    }
+    return eventList;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadEvents();
+  }
+
+  Future<void> loadEvents() async {
+    List<Event> fetchedEvents = await getEvents();
+    setState(() {
+      events = fetchedEvents;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
         appBar: AppBar(
           title: const Text('Festiva'),
-          // notificationPredicate: (ScrollNotification notification) {
-          //   return notification.depth == 1;
-          // },
-          // scrolledUnderElevation: 4.0,
-          // shadowColor: Theme.of(context).shadowColor,
-          bottom: const TabBar(
-            tabs: <Widget>[
-              Tab(
-                icon: Icon(Icons.event_available),
-                text: 'Events',
-              ),
-              Tab(
-                icon: Icon(Icons.calendar_month),
-                text: 'Calendar',
-              ),
-              Tab(
-                icon: Icon(Icons.map),
-                text: 'Map',
-              ),
-            ],
-          ),
         ),
-        body: TabBarView(
-          children: <Widget>[
+      body: Column(
+        children: <Widget>[
+          Text('Total Events: ${events.length}'),
+          for (var event in events)
+            ListTile(title: Text(event.name),)
+        ],
+      ),
 
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
           child: const Icon(Icons.add),
           onPressed: (){
             Navigator.pushNamed(context, AddEvent.id);
           },
-        ),
       ),
     );
   }
