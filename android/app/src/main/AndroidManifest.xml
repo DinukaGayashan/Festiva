@@ -33,4 +33,7 @@
        <meta-data android:name="com.google.android.geo.API_KEY"
            android:value="AIzaSyClMqfWai0uoFuul8sM18nMjHbswReqIjs"/>
     </application>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO"/>
 </manifest>
