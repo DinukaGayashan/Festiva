@@ -1,3 +1,4 @@
+import 'package:festiva/presentation/add_event.dart';
 import 'package:festiva/presentation/homepage.dart';
 import 'package:festiva/utility/constants.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,11 @@ class Festiva extends StatelessWidget {
         brightness: Brightness.dark,
         fontFamily: 'NotoSans',
       ),
+      initialRoute: HomePage.id,
+      routes: {
+        HomePage.id:(context)=>const HomePage(),
+        AddEvent.id:(context)=>const AddEvent(),
+      },
       home: const HomePage(),
     );
   }

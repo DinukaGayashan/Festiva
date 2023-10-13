@@ -1,17 +1,18 @@
+import 'package:festiva/presentation/add_event.dart';
 import 'package:flutter/material.dart';
 
-import '../utility/constants.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+  static const String id = 'HomePage';
 
   @override
   Widget build(BuildContext context) {
-    const int tabsCount = 3;
+    // const int tabsCount = 3;
 
     return DefaultTabController(
       initialIndex: 1,
-      length: tabsCount,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Festiva'),
@@ -41,6 +42,12 @@ class HomePage extends StatelessWidget {
           children: <Widget>[
 
           ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: (){
+            Navigator.pushNamed(context, AddEvent.id);
+          },
         ),
       ),
     );
