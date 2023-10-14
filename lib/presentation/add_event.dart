@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:festiva/utility/event.dart';
 import 'package:uuid/uuid.dart';
 import 'package:festiva/utility/constants.dart';
 import 'package:flutter/material.dart';
@@ -8,8 +9,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class AddEvent extends StatefulWidget {
-  const AddEvent({super.key});
-  static const String id = 'AddEvent';
+  const AddEvent(this.events, this.upcomingEvents, {super.key});
+
+  final List<Event> events, upcomingEvents;
 
   @override
   State<AddEvent> createState() => _AddEventState();
@@ -103,44 +105,28 @@ class _AddEventState extends State<AddEvent> {
                 color: kAccentColor2,
                 child: const Text('Set Location'),
                 onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        content: SizedBox(
-                          height: MediaQuery.of(context).size.height,
-                          width: MediaQuery.of(context).size.width,
-                          child: OpenStreetMapSearchAndPick(
-                            center: const LatLong(6.927079, 79.861244),
-                            buttonColor: kBackgroundColor,
-                            buttonText: 'Set Location',
-                            onPicked: (pickedData) {
-                              location = GeoPoint(pickedData.latLong.latitude,
-                                  pickedData.latLong.longitude);
-                              Navigator.of(context).pop();
-                            },
-                          ),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(
+                          title: const Text('Select Location'),
                         ),
-                      );
-                    },
+                        body: OpenStreetMapSearchAndPick(
+                          center: const LatLong(6.927079, 79.861244),
+                          buttonColor: kBackgroundColor,
+                          buttonText: 'Set Location',
+                          onPicked: (pickedData) {
+                            location = GeoPoint(pickedData.latLong.latitude,
+                                pickedData.latLong.longitude);
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ),
+                    ),
                   );
                 },
               ),
-              // SizedBox(
-              //   height: 200,
-              // child: GoogleMap(
-              //   initialCameraPosition: const CameraPosition(
-              //     target: LatLng(-33.86, 151.20),
-              //     zoom: 11.0,
-              //   ),
-              //   markers: {
-              //     const Marker(
-              //       markerId: MarkerId('Sydney'),
-              //       position: LatLng(-33.86, 151.20),
-              //     )
-              //   },
-              // ),
-              // ),
               const SizedBox(
                 height: 40,
               ),
@@ -204,8 +190,15 @@ class _AddEventState extends State<AddEvent> {
                         'publisherName': publisherName,
                         'publisherLink': publisherLink,
                       });
+
+                      Event newEvent = Event(eventName, description, date,
+                          medias, location, publisherName, publisherLink);
+                      widget.events.add(newEvent);
+                      widget.upcomingEvents.add(newEvent);
+
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           content: Text('Event successfully added.')));
+                      Navigator.pop(context);
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           content: Text('Event adding failed.')));
