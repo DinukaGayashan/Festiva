@@ -1,10 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festiva/presentation/add_event.dart';
-import 'package:festiva/presentation/event_calendar.dart';
-import 'package:festiva/presentation/event_map.dart';
-import 'package:festiva/presentation/past_events.dart';
-import 'package:festiva/utility/components.dart';
-import 'package:festiva/utility/constants.dart';
+import 'package:festiva/presentation/components.dart';
 import 'package:festiva/utility/event.dart';
 import 'package:flutter/material.dart';
 
@@ -20,6 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _firestore = FirebaseFirestore.instance;
   List<Event> events = [], upcomingEvents = [];
+  int currentIndex = 0;
 
   Future<List<Event>> getEvents() async {
     List<Event> eventList = [];
@@ -61,63 +58,34 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-            'Festiva',
+          'Festiva',
+          style: TextStyle(
+            fontSize: 25,
+          ),
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Text('Total Events: ${events.length}'),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width / 3 - 16,
-                  child: MaterialButton(
-                    color: kAccentColor2,
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return EventCalendarPage(events);
-                      }));
-                    },
-                    child: const Text('Event Calendar'),
-                  ),
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width / 3 - 16,
-                  child: MaterialButton(
-                    color: kAccentColor2,
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return EventMapPage(events);
-                      }));
-                    },
-                    child: const Text('Event Map'),
-                  ),
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width / 3 - 16,
-                  child: MaterialButton(
-                    color: kAccentColor2,
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                            return PastEvents(events, upcomingEvents);
-                          }));
-                    },
-                    child: const Text('Past Events'),
-                  ),
-                ),
-              ],
-            ),
-            Text('Upcoming Events: ${upcomingEvents.length}'),
-            for (var event in upcomingEvents) eventCard(event, context),
-          ],
-        ),
+      bottomNavigationBar: NavigationBar(
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.list), label: 'Events'),
+          NavigationDestination(
+              icon: Icon(Icons.calendar_month), label: 'Calendar'),
+          NavigationDestination(icon: Icon(Icons.map), label: 'Map'),
+          NavigationDestination(icon: Icon(Icons.history), label: 'History'),
+        ],
+        selectedIndex: currentIndex,
+        onDestinationSelected: (int index) {
+          setState(() {
+            currentIndex = index;
+          });
+        },
       ),
+      body: [
+        eventList(context, upcomingEvents),
+        eventCalendar(context, events),
+        eventMap(context, events),
+        pastEvents(context, events, upcomingEvents),
+      ][currentIndex],
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
@@ -129,7 +97,6 @@ class _HomePageState extends State<HomePage> {
               upcomingEvents;
             });
           });
-          // Navigator.pushNamed(context, AddEvent.id);
         },
       ),
     );

@@ -1,11 +1,12 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:festiva/utility/event.dart';
 import 'package:flutter/material.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class EventPage extends StatefulWidget {
   const EventPage(this.event, {super.key});
+
   final Event event;
 
   @override

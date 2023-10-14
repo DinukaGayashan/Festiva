@@ -1,8 +1,6 @@
 import 'package:festiva/presentation/homepage.dart';
-import 'package:festiva/utility/constants.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-
+import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,10 +17,16 @@ class Festiva extends StatelessWidget {
       title: 'Festiva',
       theme: ThemeData(
         useMaterial3: true,
-        primaryColor: kBaseColor1,
-        scaffoldBackgroundColor: kBackgroundColor,
-        brightness: Brightness.dark,
-        fontFamily: 'NotoSans',
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.dark,
+        ),
+        listTileTheme: ListTileThemeData(
+          tileColor: Colors.blueGrey.shade600,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+        ),
       ),
       initialRoute: HomePage.id,
       routes: {
