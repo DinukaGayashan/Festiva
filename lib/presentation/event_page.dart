@@ -15,60 +15,96 @@ class EventPage extends StatefulWidget {
 class _EventPageState extends State<EventPage> {
   @override
   Widget build(BuildContext context) {
-    print(widget.event.media.isEmpty);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Event Details'),
+        title: const Text('Event Details'),
       ),
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(widget.event.name),
-            Text(widget.event.date.toString().split(' ')[0]),
-            widget.event.media.isEmpty
-                ? const SizedBox()
-                : CarouselSlider(
-                    options: CarouselOptions(height: 400.0),
-                    items: widget.event.media.map((i) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return Image.network(i);
-                        },
-                      );
-                    }).toList(),
-                  ),
-            Text(widget.event.description),
-            widget.event.location==null?const SizedBox():
-            SizedBox(
-              height: 200,
-            child: GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target: LatLng(
-                  widget.event.location?.latitude ?? 0.0,
-                  widget.event.location?.longitude ?? 0.0,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.event.name,
+                style: const TextStyle(
+                  fontSize: 40,
                 ),
-                zoom: 15.0,
               ),
-              markers: {
-                Marker(
-                  markerId: const MarkerId(''),
-                  position: LatLng(
-                    widget.event.location?.latitude ?? 0.0,
-                    widget.event.location?.longitude ?? 0.0,
+              Text(
+                widget.event.date.toString().split(' ')[0],
+                style: const TextStyle(fontSize: 15),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              widget.event.media.isEmpty
+                  ? const SizedBox()
+                  : CarouselSlider(
+                      options: CarouselOptions(height: 400.0),
+                      items: widget.event.media.map((i) {
+                        return Builder(
+                          builder: (BuildContext context) {
+                            return Image.network(i);
+                          },
+                        );
+                      }).toList(),
+                    ),
+              const SizedBox(
+                height: 20,
+              ),
+              Text(
+                widget.event.description,
+                style: const TextStyle(fontSize: 15),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              widget.event.location == null
+                  ? const SizedBox()
+                  : SizedBox(
+                      height: 250,
+                      child: GoogleMap(
+                        initialCameraPosition: CameraPosition(
+                          target: LatLng(
+                            widget.event.location?.latitude ?? 0.0,
+                            widget.event.location?.longitude ?? 0.0,
+                          ),
+                          zoom: 15.0,
+                        ),
+                        markers: {
+                          Marker(
+                            markerId: const MarkerId(''),
+                            position: LatLng(
+                              widget.event.location?.latitude ?? 0.0,
+                              widget.event.location?.longitude ?? 0.0,
+                            ),
+                          ),
+                        },
+                      ),
+                    ),
+              const SizedBox(
+                height: 5,
+              ),
+              Row(
+                children: [
+                  Text(
+                    widget.event.publisherName,
+                    style: const TextStyle(fontSize: 20),
                   ),
-                ),
-              },
-            ),
-            ),
-            Text(widget.event.publisherName),
-            IconButton(
-                onPressed: ()async{
-                  await launch(widget.event.publisherLink);
-                },
-              icon: const Icon(Icons.open_in_new),
-            ),
-          ],
+                  IconButton(
+                    onPressed: () async {
+                      await launch(widget.event.publisherLink);
+                    },
+                    icon: const Icon(
+                      Icons.open_in_new,
+                      size: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
