@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festiva/presentation/add_event.dart';
+import 'package:festiva/presentation/event_calendar.dart';
 import 'package:festiva/utility/components.dart';
 import 'package:festiva/utility/constants.dart';
 import 'package:festiva/utility/event.dart';
@@ -70,7 +71,12 @@ class _HomePageState extends State<HomePage> {
                   width: MediaQuery.of(context).size.width / 2 - 16,
                   child: MaterialButton(
                     color: kAccentColor2,
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return EventCalendarPage(events);
+                      }));
+                    },
                     child: const Text('Event Calendar'),
                   ),
                 ),
@@ -106,11 +112,7 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             Text('Upcoming Events: ${upcomingEvents.length}'),
-            for (var event in upcomingEvents)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: eventCard(event,context),
-              ),
+            for (var event in upcomingEvents) eventCard(event, context),
           ],
         ),
       ),
