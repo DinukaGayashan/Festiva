@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:festiva/presentation/add_event.dart';
 import 'package:festiva/presentation/event_calendar.dart';
 import 'package:festiva/presentation/event_map.dart';
+import 'package:festiva/presentation/past_events.dart';
 import 'package:festiva/utility/components.dart';
 import 'package:festiva/utility/constants.dart';
 import 'package:festiva/utility/event.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
   static const String id = 'HomePage';
 
   @override
@@ -58,10 +60,12 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Festiva'),
+        title: const Text(
+            'Festiva',
+        ),
+        centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(4.0),
+      body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
             Text('Total Events: ${events.length}'),
@@ -69,7 +73,7 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 SizedBox(
-                  width: MediaQuery.of(context).size.width / 2 - 16,
+                  width: MediaQuery.of(context).size.width / 3 - 16,
                   child: MaterialButton(
                     color: kAccentColor2,
                     onPressed: () {
@@ -82,36 +86,28 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 SizedBox(
-                  width: MediaQuery.of(context).size.width / 2 - 16,
+                  width: MediaQuery.of(context).size.width / 3 - 16,
                   child: MaterialButton(
                     color: kAccentColor2,
                     onPressed: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
-                            return EventMapPage(events);
-                          }));
+                        return EventMapPage(events);
+                      }));
                     },
                     child: const Text('Event Map'),
                   ),
                 ),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
                 SizedBox(
-                  width: MediaQuery.of(context).size.width / 2 - 16,
+                  width: MediaQuery.of(context).size.width / 3 - 16,
                   child: MaterialButton(
                     color: kAccentColor2,
-                    onPressed: () {},
-                    child: const Text('Search Events'),
-                  ),
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width / 2 - 16,
-                  child: MaterialButton(
-                    color: kAccentColor2,
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                            return PastEvents(events, upcomingEvents);
+                          }));
+                    },
                     child: const Text('Past Events'),
                   ),
                 ),
