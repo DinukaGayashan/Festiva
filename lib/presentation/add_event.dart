@@ -62,7 +62,7 @@ class _AddEventState extends State<AddEvent> {
               ),
               const Text('Date'),
               SizedBox(
-                width: 120,
+                width: 140,
                 child: FilledButton(
                   onPressed: () {
                     showDatePicker(
@@ -88,7 +88,7 @@ class _AddEventState extends State<AddEvent> {
               ),
               const Text('Media'),
               SizedBox(
-                width: 120,
+                width: 140,
                 child: FilledButton(
                   child: Text(media?.count != null
                       ? '${media?.count} selected'
@@ -107,7 +107,7 @@ class _AddEventState extends State<AddEvent> {
               ),
               const Text('Location'),
               SizedBox(
-                width: 120,
+                width: 140,
                 child: FilledButton(
                   child: const Text('Set Location'),
                   onPressed: () {
@@ -137,41 +137,44 @@ class _AddEventState extends State<AddEvent> {
               const SizedBox(
                 height: 40,
               ),
-              const Text('Publisher Details'),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text('Name'),
-              TextField(
-                onChanged: (value) {
-                  publisherName = value;
-                },
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text('Social Link'),
-              TextField(
-                onChanged: (value) {
-                  publisherLink = value;
-                },
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: FilledButton(
-                  onPressed: () async {
-                    final LoginResult loginResult = await FacebookAuth.instance.login(
-                      permissions: ['public_profile'],
-                    );
-                    final userData = await FacebookAuth.i.getUserData(
-                      fields: "name,email,picture.width(200),link",
-                    );
-                    print(userData);
+              // const Text('Publisher Details'),
+              // const SizedBox(
+              //   height: 20,
+              // ),
+              // const Text('Name'),
+              // TextField(
+              //   onChanged: (value) {
+              //     publisherName = value;
+              //   },
+              // ),
+              // const SizedBox(
+              //   height: 20,
+              // ),
+              // const Text('Social Link'),
+              // TextField(
+              //   onChanged: (value) {
+              //     publisherLink = value;
+              //   },
+              // ),
+              // const SizedBox(
+              //   height: 40,
+              // ),
+              // SizedBox(
+              //   width: MediaQuery.of(context).size.width,
+              //   child: FilledButton(
+              //     onPressed: () async {
+              //       final LoginResult loginResult =
+              //           await FacebookAuth.instance.login(
+              //         permissions: ['public_profile','user_link'],
+              //       );
+              //       final userData = await FacebookAuth.i.getUserData(
+              //         fields: "name,email,picture.width(200),link",
+              //       );
+              //       print(userData);
 
-                    // Check if the login was successful
+              // print(loginResult.);
+
+              // Check if the login was successful
 //                     if (loginResult.status == LoginStatus.success) {
 //                       // Fetch user profile data using the obtained AccessToken
 //                       final AccessToken? accessToken = loginResult.accessToken;
@@ -187,10 +190,10 @@ class _AddEventState extends State<AddEvent> {
 //                     } else {
 //                       print("Facebook login failed: ${loginResult.message}");
 //                     }
-                  },
-                  child: null,
-                ),
-              ),
+//                   },
+//                   child: null,
+//                 ),
+//               ),
               SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: FilledButton(
@@ -199,11 +202,24 @@ class _AddEventState extends State<AddEvent> {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           content:
                               Text('Please add necessary event details.')));
-                    } else if (publisherName.isEmpty || publisherLink.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text('Please add necessary user details.')));
                     } else {
                       try {
+                        final LoginResult loginResult =
+                            await FacebookAuth.instance.login(
+                          permissions: ['public_profile', 'user_link'],
+                        );
+                        if (loginResult.status == LoginStatus.success) {
+                          final userData = await FacebookAuth.i.getUserData(
+                            fields: "name,email,picture.width(200),link",
+                          );
+                          publisherName = userData['name'];
+                          publisherLink = userData['link'];
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('User login failed.')));
+                        }
+
                         List<String> medias = [];
                         var uuid = const Uuid();
                         final media = this.media;
@@ -237,6 +253,7 @@ class _AddEventState extends State<AddEvent> {
                             medias, location, publisherName, publisherLink);
                         widget.events.add(newEvent);
                         widget.upcomingEvents.add(newEvent);
+                        widget.upcomingEvents.sort((a, b) => a.date.compareTo(b.date));
 
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

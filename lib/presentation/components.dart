@@ -41,6 +41,9 @@ Widget eventCalendar(BuildContext context, List<Event> events) {
     padding: const EdgeInsets.all(8.0),
     child: es.EventCalendar(
       calendarType: es.CalendarType.GREGORIAN,
+      calendarOptions: es.CalendarOptions(
+        headerMonthBackColor: Colors.white24,
+      ),
       events: [
         for (Event e in events)
           es.Event(
