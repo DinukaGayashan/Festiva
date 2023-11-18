@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">festiva</string>
+    <string name="facebook_app_id">4428783314014197</string>
+    <string name="facebook_client_token">939f323d0d2e08e7b94149db0840c370</string>
+    <string name="fb_login_protocol_scheme">fb4428783314014197</string>
+</resources>

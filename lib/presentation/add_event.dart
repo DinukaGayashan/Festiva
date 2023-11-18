@@ -5,6 +5,7 @@ import 'package:festiva/utility/event.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 import 'package:uuid/uuid.dart';
 
@@ -157,6 +158,38 @@ class _AddEventState extends State<AddEvent> {
               ),
               const SizedBox(
                 height: 40,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: FilledButton(
+                  onPressed: () async {
+                    final LoginResult loginResult = await FacebookAuth.instance.login(
+                      permissions: ['public_profile'],
+                    );
+                    final userData = await FacebookAuth.i.getUserData(
+                      fields: "name,email,picture.width(200),link",
+                    );
+                    print(userData);
+
+                    // Check if the login was successful
+//                     if (loginResult.status == LoginStatus.success) {
+//                       // Fetch user profile data using the obtained AccessToken
+//                       final AccessToken? accessToken = loginResult.accessToken;
+//
+//                       // Use the accessToken to get user profile data
+//                       final userData = await FacebookAuth.instance.getUserData();
+//
+//                       // Access user profile link
+//                       final userProfileLink = userData['link'];
+// print(loginResult.message);
+//                       // Print or use the user profile link
+//                       print("User Profile Link: $userProfileLink");
+//                     } else {
+//                       print("Facebook login failed: ${loginResult.message}");
+//                     }
+                  },
+                  child: null,
+                ),
               ),
               SizedBox(
                 width: MediaQuery.of(context).size.width,
