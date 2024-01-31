@@ -29,12 +29,15 @@ class _EventPageState extends State<EventPage> {
               Text(
                 widget.event.name,
                 style: const TextStyle(
-                  fontSize: 40,
+                  fontSize: 35,
                 ),
+              ),
+              const SizedBox(
+                height: 5,
               ),
               Text(
                 widget.event.date.toString().split(' ')[0],
-                style: const TextStyle(fontSize: 15),
+                style: const TextStyle(fontSize: 20),
               ),
               const SizedBox(
                 height: 20,
@@ -42,7 +45,11 @@ class _EventPageState extends State<EventPage> {
               widget.event.media.isEmpty
                   ? const SizedBox()
                   : CarouselSlider(
-                      options: CarouselOptions(height: 400.0),
+                      options: CarouselOptions(
+                          height: 250.0,
+                          aspectRatio:4/3,
+                          viewportFraction:0.95,
+                      ),
                       items: widget.event.media.map((i) {
                         return Builder(
                           builder: (BuildContext context) {
@@ -52,19 +59,19 @@ class _EventPageState extends State<EventPage> {
                       }).toList(),
                     ),
               const SizedBox(
-                height: 20,
+                height: 30,
               ),
               Text(
                 widget.event.description,
                 style: const TextStyle(fontSize: 15),
               ),
               const SizedBox(
-                height: 20,
+                height: 40,
               ),
               widget.event.location == null
                   ? const SizedBox()
                   : SizedBox(
-                      height: 250,
+                      height: 150,
                       child: GoogleMap(
                         initialCameraPosition: CameraPosition(
                           target: LatLng(
@@ -85,24 +92,27 @@ class _EventPageState extends State<EventPage> {
                       ),
                     ),
               const SizedBox(
-                height: 5,
+                height: 10,
               ),
-              Row(
-                children: [
-                  Text(
-                    widget.event.publisherName,
-                    style: const TextStyle(fontSize: 20),
-                  ),
-                  IconButton(
-                    onPressed: () async {
-                      await launch(widget.event.publisherLink);
-                    },
-                    icon: const Icon(
-                      Icons.open_in_new,
+              MaterialButton(
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.facebook,
                       size: 20,
                     ),
-                  ),
-                ],
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      widget.event.publisherName,
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                  ],
+                ),
+                onPressed: () async {
+                  await launch(widget.event.publisherLink);
+                },
               ),
             ],
           ),

@@ -214,55 +214,52 @@ class _AddEventState extends State<AddEvent> {
                           );
                           publisherName = userData['name'];
                           publisherLink = userData['link'];
-                        } else {
+
+                          List<String> medias = [];
+                          var uuid = const Uuid();
+                          final media = this.media;
+                          if (media != null) {
+                            for (PlatformFile file in media.files) {
+                              UploadTask uploadTask;
+                              String path = 'media/$eventName/${uuid.v4()}';
+                              uploadTask = _storage
+                                  .ref()
+                                  .child(path)
+                                  .putFile(File(file.path!));
+
+                              final snapshot =
+                              await uploadTask.whenComplete(() {});
+                              final url = await snapshot.ref.getDownloadURL();
+                              medias.add(url);
+                            }
+                          }
+
+                          await _firestore.collection('events').add({
+                            'eventName': eventName,
+                            'description': description,
+                            'date': date,
+                            'media': medias,
+                            'location': location,
+                            'publisherName': publisherName,
+                            'publisherLink': publisherLink,
+                          });
+
+                          Event newEvent = Event(eventName, description, date,
+                              medias, location, publisherName, publisherLink);
+                          widget.events.add(newEvent);
+                          widget.upcomingEvents.add(newEvent);
+                          widget.upcomingEvents.sort((a, b) => a.date.compareTo(b.date));
+
                           ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                  content: Text('User login failed.')));
+                                  content: Text('Event successfully added.')));
+                          Navigator.pop(context);
                         }
 
-                        List<String> medias = [];
-                        var uuid = const Uuid();
-                        final media = this.media;
-                        if (media != null) {
-                          for (PlatformFile file in media.files) {
-                            UploadTask uploadTask;
-                            String path = 'media/$eventName/${uuid.v4()}';
-                            uploadTask = _storage
-                                .ref()
-                                .child(path)
-                                .putFile(File(file.path!));
-
-                            final snapshot =
-                                await uploadTask.whenComplete(() {});
-                            final url = await snapshot.ref.getDownloadURL();
-                            medias.add(url);
-                          }
-                        }
-
-                        await _firestore.collection('events').add({
-                          'eventName': eventName,
-                          'description': description,
-                          'date': date,
-                          'media': medias,
-                          'location': location,
-                          'publisherName': publisherName,
-                          'publisherLink': publisherLink,
-                        });
-
-                        Event newEvent = Event(eventName, description, date,
-                            medias, location, publisherName, publisherLink);
-                        widget.events.add(newEvent);
-                        widget.upcomingEvents.add(newEvent);
-                        widget.upcomingEvents.sort((a, b) => a.date.compareTo(b.date));
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Event successfully added.')));
-                        Navigator.pop(context);
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                                content: Text('Event adding failed.')));
+                                content: Text('User login failed.')));
                       }
                     }
                   },

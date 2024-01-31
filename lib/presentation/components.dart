@@ -3,11 +3,39 @@ import 'package:festiva/utility/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_event_calendar/flutter_event_calendar.dart' as es;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'dart:math';
+
+List<Color> colorMap = [
+  const Color(0xff795548),
+  const Color(0xffff5722),
+  const Color(0xffff9800),
+  const Color(0xffffc107),
+  const Color(0xffcddc39),
+  const Color(0xff8bc34a),
+  const Color(0xff4caf50),
+  const Color(0xff009688),
+  const Color(0xff00bcd4),
+  const Color(0xff03a9f4),
+  const Color(0xff2196f3),
+  const Color(0xff00bcd4),
+  const Color(0xff3f51b5),
+  const Color(0xff673ab7),
+  const Color(0xff9c27b0),
+  const Color(0xffe91e63),
+  const Color(0xfff44336)
+];
+Random random = Random();
 
 Widget eventCard(Event event, BuildContext context) {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 8.0),
     child: ListTile(
+      minVerticalPadding: 20,
+      leading: SizedBox(
+        width: 80,
+        child: Image.network(event.media.first),
+      ),
+      tileColor: colorMap[random.nextInt(colorMap.length)].withOpacity(0.5),
       title: Text(event.name),
       subtitle: Text(event.date.toString().split(' ')[0]),
       onTap: () {
@@ -25,7 +53,7 @@ Widget eventList(BuildContext context, List<Event> upcomingEvents) {
     child: SingleChildScrollView(
       child: Column(
         children: <Widget>[
-          Text('Upcoming Events: ${upcomingEvents.length}'),
+          // Text('Upcoming Events: ${upcomingEvents.length}'),
           const SizedBox(
             height: 10,
           ),
@@ -42,7 +70,14 @@ Widget eventCalendar(BuildContext context, List<Event> events) {
     child: es.EventCalendar(
       calendarType: es.CalendarType.GREGORIAN,
       calendarOptions: es.CalendarOptions(
-        headerMonthBackColor: Colors.white24,
+        headerMonthBackColor: Colors.white30,
+        bottomSheetBackColor: Colors.white
+      ),
+        dayOptions:es.DayOptions(
+          unselectedTextColor: Colors.white
+        ),
+      eventOptions: es.EventOptions(
+        emptyTextColor: Colors.white
       ),
       events: [
         for (Event e in events)
@@ -101,7 +136,7 @@ Widget pastEvents(
     child: SingleChildScrollView(
       child: Column(
         children: [
-          Text('Past Events: ${pastEvents.length}'),
+          // Text('Past Events: ${pastEvents.length}'),
           const SizedBox(
             height: 10,
           ),
