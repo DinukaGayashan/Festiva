@@ -3,6 +3,8 @@ import 'package:festiva/utility/event.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:http/http.dart' as http;
 
 class EventPage extends StatefulWidget {
   const EventPage(this.event, {super.key});
@@ -38,6 +40,23 @@ class _EventPageState extends State<EventPage> {
               Text(
                 widget.event.date.toString().split(' ')[0],
                 style: const TextStyle(fontSize: 20),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    onPressed: () async{
+                      final image=await http.get(Uri.parse(widget.event.media.first));
+                      Share.shareXFiles([
+                        XFile.fromData(image.bodyBytes,name: widget.event.name,mimeType: 'image/png')
+                      ],
+                          subject: widget.event.name,
+                          text: widget.event.description
+                      );
+                    },
+                    icon: Icon(Icons.share),
+                  ),
+                ],
               ),
               const SizedBox(
                 height: 20,

@@ -47,6 +47,8 @@ dependencies:
   url_launcher: ^6.1.11
   flutter_event_calendar: ^1.0.0
   flutter_facebook_auth: ^5.0.11
+  share_plus: ^7.2.2
+  http: 0.13.6
 
 dev_dependencies:
   flutter_test:

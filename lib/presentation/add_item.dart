@@ -9,20 +9,20 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 import 'package:uuid/uuid.dart';
 
-class AddEvent extends StatefulWidget {
-  const AddEvent(this.events, this.upcomingEvents, {super.key});
+class AddItem extends StatefulWidget {
+  const AddItem(this.events, {super.key});
 
-  final List<Event> events, upcomingEvents;
+  final List<Event> events;
 
   @override
-  State<AddEvent> createState() => _AddEventState();
+  State<AddItem> createState() => _AddItemState();
 }
 
-class _AddEventState extends State<AddEvent> {
+class _AddItemState extends State<AddItem> {
   final _firestore = FirebaseFirestore.instance;
   final _storage = FirebaseStorage.instance;
 
-  late String eventName = '', description = '';
+  late String itemName = '', description = '';
   DateTime date = DateTime.now();
   FilePickerResult? media;
   late GeoPoint? location = null;
@@ -32,7 +32,7 @@ class _AddEventState extends State<AddEvent> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Event'),
+        title: const Text('Add Item'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -40,10 +40,10 @@ class _AddEventState extends State<AddEvent> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Event name'),
+              const Text('Item name'),
               TextField(
                 onChanged: (value) {
-                  eventName = value;
+                  itemName = value;
                 },
               ),
               const SizedBox(
@@ -67,7 +67,7 @@ class _AddEventState extends State<AddEvent> {
                   onPressed: () {
                     showDatePicker(
                       context: context,
-                      firstDate: DateTime.now(),
+                      firstDate: DateTime(2000),
                       lastDate: DateTime(3000),
                       initialDate: DateTime.now(),
                     ).then((selectedDate) {
@@ -137,71 +137,14 @@ class _AddEventState extends State<AddEvent> {
               const SizedBox(
                 height: 40,
               ),
-              // const Text('Publisher Details'),
-              // const SizedBox(
-              //   height: 20,
-              // ),
-              // const Text('Name'),
-              // TextField(
-              //   onChanged: (value) {
-              //     publisherName = value;
-              //   },
-              // ),
-              // const SizedBox(
-              //   height: 20,
-              // ),
-              // const Text('Social Link'),
-              // TextField(
-              //   onChanged: (value) {
-              //     publisherLink = value;
-              //   },
-              // ),
-              // const SizedBox(
-              //   height: 40,
-              // ),
-              // SizedBox(
-              //   width: MediaQuery.of(context).size.width,
-              //   child: FilledButton(
-              //     onPressed: () async {
-              //       final LoginResult loginResult =
-              //           await FacebookAuth.instance.login(
-              //         permissions: ['public_profile','user_link'],
-              //       );
-              //       final userData = await FacebookAuth.i.getUserData(
-              //         fields: "name,email,picture.width(200),link",
-              //       );
-              //       print(userData);
-
-              // print(loginResult.);
-
-              // Check if the login was successful
-//                     if (loginResult.status == LoginStatus.success) {
-//                       // Fetch user profile data using the obtained AccessToken
-//                       final AccessToken? accessToken = loginResult.accessToken;
-//
-//                       // Use the accessToken to get user profile data
-//                       final userData = await FacebookAuth.instance.getUserData();
-//
-//                       // Access user profile link
-//                       final userProfileLink = userData['link'];
-// print(loginResult.message);
-//                       // Print or use the user profile link
-//                       print("User Profile Link: $userProfileLink");
-//                     } else {
-//                       print("Facebook login failed: ${loginResult.message}");
-//                     }
-//                   },
-//                   child: null,
-//                 ),
-//               ),
               SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: FilledButton(
                   onPressed: () async {
-                    if (eventName.isEmpty || description.isEmpty) {
+                    if (itemName.isEmpty || description.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           content:
-                              Text('Please add necessary event details.')));
+                              Text('Please add item details.')));
                     } else {
                       try {
                         final LoginResult loginResult =
@@ -221,7 +164,7 @@ class _AddEventState extends State<AddEvent> {
                           if (media != null) {
                             for (PlatformFile file in media.files) {
                               UploadTask uploadTask;
-                              String path = 'media/$eventName/${uuid.v4()}';
+                              String path = 'media/$itemName/${uuid.v4()}';
                               uploadTask = _storage
                                   .ref()
                                   .child(path)
@@ -234,8 +177,8 @@ class _AddEventState extends State<AddEvent> {
                             }
                           }
 
-                          await _firestore.collection('events').add({
-                            'eventName': eventName,
+                          await _firestore.collection('items').add({
+                            'eventName': itemName,
                             'description': description,
                             'date': date,
                             'media': medias,
@@ -244,15 +187,15 @@ class _AddEventState extends State<AddEvent> {
                             'publisherLink': publisherLink,
                           });
 
-                          Event newEvent = Event(eventName, description, date,
+                          Event newEvent = Event(itemName, description, date,
                               medias, location, publisherName, publisherLink);
                           widget.events.add(newEvent);
-                          widget.upcomingEvents.add(newEvent);
-                          widget.upcomingEvents.sort((a, b) => a.date.compareTo(b.date));
+                          // widget.upcomingEvents.add(newEvent);
+                          // widget.upcomingEvents.sort((a, b) => a.date.compareTo(b.date));
 
                           ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                  content: Text('Event successfully added.')));
+                                  content: Text('Item successfully added.')));
                           Navigator.pop(context);
                         }
 
@@ -263,7 +206,7 @@ class _AddEventState extends State<AddEvent> {
                       }
                     }
                   },
-                  child: const Text('Add event'),
+                  child: const Text('Add item'),
                 ),
               ),
               const SizedBox(

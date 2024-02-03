@@ -1,3 +1,4 @@
+import 'package:festiva/presentation/add_item.dart';
 import 'package:festiva/presentation/event_page.dart';
 import 'package:festiva/utility/event.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +34,8 @@ Widget eventCard(Event event, BuildContext context) {
       minVerticalPadding: 20,
       leading: SizedBox(
         width: 80,
-        child: Image.network(event.media.first),
+        child: event.media.isEmpty
+            ? const SizedBox():Image.network(event.media.first),
       ),
       tileColor: colorMap[random.nextInt(colorMap.length)].withOpacity(0.5),
       title: Text(event.name),
@@ -130,7 +132,6 @@ Widget pastEvents(
       pastEvents.add(element);
     }
   }
-
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: SingleChildScrollView(
@@ -141,6 +142,36 @@ Widget pastEvents(
             height: 10,
           ),
           for (var event in pastEvents) eventCard(event, context),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget itemList(BuildContext context, List<Event> items) {
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: SingleChildScrollView(
+      child: Column(
+        children: <Widget>[
+          // Text('Upcoming Events: ${upcomingEvents.length}'),
+          MaterialButton(
+              onPressed: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return AddItem(items);
+                }));
+              },
+              child: const Row(
+                children: [
+                  Icon(Icons.add),
+                  Text('Add Lost/Found Item'),
+                ],
+              )
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          for (var event in items) eventCard(event, context),
         ],
       ),
     ),
